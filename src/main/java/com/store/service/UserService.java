@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import javax.transaction.Transactional;
 
+import com.store.http.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,11 +67,24 @@ public class UserService {
     }
 
     // Deleting the User
-    public void delete(int Uid, int Aid) {
-        String roll1 = userRepo.findById(Aid).getRol();
-        String roll2 = userRepo.findById(Uid).getRol();
-        if (Objects.equals(roll1, "admin") && (Objects.equals(roll2, "normal"))) {
-            userRepo.deleteById(Uid);
+    public Response delete(int Uid, int Aid) {
+        Response resp = new Response();
+        try{
+            String roll1 = userRepo.findById(Aid).getRol();
+            String roll2 = userRepo.findById(Uid).getRol();
+            if (Objects.equals(roll1, "admin") && (Objects.equals(roll2, "normal"))) {
+                userRepo.deleteById(Uid);
+                resp.setMessage(String.format("Administrator having id equal to %s has deleted the user having user_id = %s", Aid, Uid));
+            } else if (Objects.equals(roll1, "admin") && Objects.equals(roll2, "admin")) {
+                resp.setMessage("You can not delete another Admin");
+            } else {
+                resp.setMessage("You are not authorized");
+            }
+            return resp;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.setMessage(String.format("User having user_id = %s does not exist", Uid));
+            return resp;
         }
     }
 }

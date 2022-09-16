@@ -16,7 +16,7 @@ public class User {
     private int userId;
 
     @NotEmpty
-    @Size(min = 4, message = "min 4 required" )
+    @Size(min = 4, message = "min 4 character required" )
     private String name;
 
     @NotEmpty
@@ -24,6 +24,7 @@ public class User {
     private String email;
 
     @NotEmpty
+    @Size(min = 8, message = "min 8 character required" )
     private String password;
 
 	private String rol;
@@ -80,31 +81,10 @@ public class User {
     }
 
     public void setRol(String rol) { this.rol = rol; }
-/*
-    public void setRol(String rol) {
-    	
-    	if (getCode() == "qwerty") {
-  			this.rol = "admin";
-  		}
-  		else if (getCode() == null) {
-  			this.rol = "normal";
-  		}
-        
-    }*/
     
     public String getStatus() { return status; }
 
     public void setStatus(String status) { this.status = status; }
-/*
-  	public void setStatus(String status) {
-  		
-  		if (getRol() == "admin") {
-  			this.status = null;
-  		}
-  		else {
-  			this.status = status;
-  		}  		
-  	}*/
 
     public String getCode() { return code; }
 

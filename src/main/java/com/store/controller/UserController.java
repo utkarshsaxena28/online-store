@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import com.store.http.Request;
+import com.store.http.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,8 +61,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/users", consumes = "application/json", produces = "application/json")                                                //CHECKED
-    public ResponseEntity<User> add(@Valid @RequestBody User uzr) {
+    public ResponseEntity<User> add(@Valid @RequestBody Request req ) {
         User ue = null;
+        User uzr = req.getUser();
         try {
             ue = usrService.addUser(uzr);
             int id = uzr.getUserId();
@@ -73,8 +76,8 @@ public class UserController {
     }
 
     @PutMapping("/users")                                                    //CHECKED
-    public ResponseEntity<User> updateUser(@Valid @RequestBody User us, @RequestParam("userId") Integer id) {
-
+    public ResponseEntity<User> updateUser(@Valid @RequestBody Request req, @RequestParam("userId") Integer id) {
+        User us = req.getUser();
         try {
             User ue = usrService.updateUser(us,id);
             logger.info("Updating User having id equale to {}............", id);
@@ -86,9 +89,10 @@ public class UserController {
     }
 
     @PatchMapping("/users")                                          //CHECKED
-    public ResponseEntity<User> updatePartially(@Valid @RequestBody User ue, @RequestParam("userId") Integer id) {
+    public ResponseEntity<User> updatePartially(@Valid @RequestBody Request req, @RequestParam("userId") Integer id) {
+        User uzr = req.getUser();
         try {
-            User uer = usrService.partiallyUpdateUser(ue,id);
+            User uer = usrService.partiallyUpdateUser(uzr,id);
             logger.info("Updating User having id equale to {}............", id);
             return ResponseEntity.of(Optional.of(uer));
         } catch(Exception e) {
@@ -98,11 +102,11 @@ public class UserController {
     }
 
     @DeleteMapping("/users")                                         // CHECKED
-    public ResponseEntity<?> delete(@RequestParam("userId") Integer userId, @RequestParam("adminId") Integer adminId ) {
+    public ResponseEntity<String> delete(@RequestParam("userId") Integer userId, @RequestParam("adminId") Integer adminId ) {
         try {
-            usrService.delete(userId,adminId);
+            Response resp = usrService.delete(userId,adminId);
             logger.info("User having id equal to {} is deleted.............", userId);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return new ResponseEntity<>(resp.getMessage(),HttpStatus.OK);
         } catch(Exception e) {
             logger.error("Ops! some error occurred", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
